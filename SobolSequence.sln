@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SobolSequence", "SobolSequence\SobolSequence.vcxproj", "{DEF6F4EF-F8EE-4B92-87AD-14446C7CD1AF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DEF6F4EF-F8EE-4B92-87AD-14446C7CD1AF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DEF6F4EF-F8EE-4B92-87AD-14446C7CD1AF}.Debug|Win32.Build.0 = Debug|Win32
+		{DEF6F4EF-F8EE-4B92-87AD-14446C7CD1AF}.Release|Win32.ActiveCfg = Release|Win32
+		{DEF6F4EF-F8EE-4B92-87AD-14446C7CD1AF}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
