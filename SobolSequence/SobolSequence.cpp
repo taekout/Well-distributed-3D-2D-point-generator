@@ -51,10 +51,10 @@ int main(int argc, char **argv)
 	HenyeyGreensteinSampleGenerator hg(N);
 	RNG rng;
 	rng.Seed(3);
-	vector<vector< MediaPath *>> mpVec2nd;
+	vector<vector<SobolPoints3D *>> mpVec2nd;
 	for(int i = 0 ; i < 10 ; i++)
 	{
-		vector<MediaPath *> *mpVec = new vector<MediaPath *>();
+		vector<SobolPoints3D *> *mpVec = new vector<SobolPoints3D *>();
 		for(int j = 0 ; j < 5 ; j++)
 		{
 			float wPrev[3];
@@ -63,28 +63,28 @@ int main(int argc, char **argv)
 			Vector _wPrev(wPrev[0], wPrev[1], wPrev[2]);
 			_wPrev.Normalize();
 			wPrev[0] = _wPrev.x; wPrev[1] = _wPrev.y; wPrev[2] = _wPrev.z;
-			float wNext[3];
-			for(int k = 0 ; k < 3 ; k++)
-				wNext[k] = rng.RandomFloat();
-			Vector _wNext(wNext[0], wNext[1], wNext[2]);
-			_wNext.Normalize();
-			wNext[0]= _wNext.x; wNext[1]= _wNext.y; wNext[2]= _wNext.z;
-			//Point pPrev(0.f, 0.f, 0.f);
-			//Point pCur(pPrev);
-			float pCur[3] = {0.f}, pPrev[3] = {0.f};
-			Spectrum alpha(0.f);
-			MediaPath * mp = new MediaPath(pPrev, pCur, wPrev, wNext);
+			SobolPoints3D * mp = new SobolPoints3D(wPrev[0], wPrev[1], wPrev[2], 0.f);
 			mpVec ->push_back(mp);
 		}
 		mpVec2nd.push_back(*mpVec);
 	}
-	vector<vector<MediaPath *>> transformedPaths;
+	vector<vector<SobolPoints3D *>> transformedPaths;
 	Vector z(1.f,-1.f,1.5f);
 	z.Normalize();
 	// when z = (0, 1, 0), it will cause some problem!
 	hg.TransformVector(z, mpVec2nd, transformedPaths);
+	vector<SobolPoints3D *> paths;
+	vector<SobolPoints3D *> pathsConverted;
+	for(int i = 0 ; i < 20 ; i++) {
+		SobolPoints3D * sp = new SobolPoints3D(rng.RandomFloat(), rng.RandomFloat(), rng.RandomFloat(), rng.RandomFloat());
+		Vector v(sp ->operator Vector()); v.Normalize();
+		sp ->x = v.x; sp ->y = v.y; sp ->z = v.z;
+		paths.push_back(sp);
+	}
+	hg.TransformVector(z, paths, pathsConverted);
 	//hg.PrintVectors(transformedPaths);
 	hg.ToString(z, mpVec2nd, transformedPaths);
+	//hg.ToString(z, paths, pathsConverted);
 
 	// Later, make sure that I free the one dimensional vectors then 2 dimensional vectors. You must loop over the vector<vector<MediaPath *>>.
 

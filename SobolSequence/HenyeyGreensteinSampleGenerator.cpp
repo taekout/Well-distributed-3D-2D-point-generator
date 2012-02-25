@@ -37,61 +37,82 @@ void HenyeyGreensteinSampleGenerator::PrintVectors(vector<vector<MediaPath *>> &
 	}
 }
 
-void HenyeyGreensteinSampleGenerator::TransformVector(Vector curDir, vector<vector<MediaPath *>> &paths, // paths = sobel points.
-								vector<vector<MediaPath *>> &transformedPaths)
+void HenyeyGreensteinSampleGenerator::TransformVector(Vector curDir, vector<vector<SobolPoints3D *>> &paths, // paths = sobel points.
+								vector<vector<SobolPoints3D *>> &transformedPaths)
 {
 	Vector arbitrary(0.f, 1.f, 0.f);
 	Vector x = Cross(curDir, arbitrary);
 	Vector y = Cross(x, curDir);
-	float wPrev[3], wNext[3];
-	//float pPrev[3], pCur[3];
 	transformedPaths.reserve(paths.size());
-	vector<vector<MediaPath *>>::iterator itend = paths.end();
-	for(vector<vector<MediaPath *>>::iterator it = paths.begin() ; it < itend ; it++) {
-		vector<MediaPath *> vecMediaPaths = *it;
-		vector<MediaPath *>::iterator insideItEnd = vecMediaPaths.end();
-		vector<MediaPath *> *convertedPaths = new vector<MediaPath *>();
-		convertedPaths ->reserve(vecMediaPaths.size());
-		for(vector<MediaPath *>::iterator insideIt = vecMediaPaths.begin() ; insideIt < insideItEnd ; insideIt++) {
-			MediaPath * mediaPath = *insideIt;
-			MediaPath * mediaPathConverted = new MediaPath();
-			float len = mediaPath ->wNext.Length();
-			mediaPathConverted ->wNext.x = x.x * mediaPath ->wNext.x + y.x * mediaPath ->wNext.y + curDir.x * mediaPath ->wNext.z;
-			mediaPathConverted ->wNext.y = x.y * mediaPath ->wNext.x + y.y * mediaPath ->wNext.y + curDir.y * mediaPath ->wNext.z;
-			mediaPathConverted ->wNext.z = x.z * mediaPath ->wNext.x + y.z * mediaPath ->wNext.y + curDir.z * mediaPath ->wNext.z;
-
-			mediaPathConverted ->wPrev.x = x.x * mediaPath ->wPrev.x + y.x * mediaPath ->wPrev.y + curDir.x * mediaPath ->wPrev.z;
-			mediaPathConverted ->wPrev.y = x.y * mediaPath ->wPrev.x + y.y * mediaPath ->wPrev.y + curDir.y * mediaPath ->wPrev.z;
-			mediaPathConverted ->wPrev.z = x.z * mediaPath ->wPrev.x + y.z * mediaPath ->wPrev.y + curDir.z * mediaPath ->wPrev.z;
-
-			mediaPathConverted ->alpha = mediaPath ->alpha;
-			mediaPathConverted ->pCur =  mediaPath ->pCur;
-			mediaPathConverted ->pPrev =  mediaPath ->pPrev;
-			convertedPaths ->push_back(mediaPathConverted);
+	vector<vector<SobolPoints3D *>>::iterator itend = paths.end();
+	for(vector<vector<SobolPoints3D  *>>::iterator it = paths.begin() ; it < itend ; it++) {
+		vector<SobolPoints3D *> vecMediaPaths = *it;
+		vector<SobolPoints3D *>::iterator insideItEnd = vecMediaPaths.end();
+		vector<SobolPoints3D *> convertedPaths;// = new vector<SobolPoints3D *>();
+		convertedPaths.reserve(vecMediaPaths.size());
+		for(vector<SobolPoints3D *>::iterator insideIt = vecMediaPaths.begin() ; insideIt < insideItEnd ; insideIt++) {
+			SobolPoints3D * mediaPath = *insideIt;
+			SobolPoints3D * mediaPathConverted = new SobolPoints3D();
+			mediaPathConverted ->x = x.x * mediaPath ->x + y.x * mediaPath ->y + curDir.x * mediaPath ->z;
+			mediaPathConverted ->y = x.y * mediaPath ->x + y.y * mediaPath ->y + curDir.y * mediaPath ->z;
+			mediaPathConverted ->z = x.z * mediaPath ->x + y.z * mediaPath ->y + curDir.z * mediaPath ->z;
+			mediaPathConverted ->pdf = mediaPath ->pdf;
+			convertedPaths.push_back(mediaPathConverted);
 		}
-		transformedPaths.push_back(*convertedPaths);
+		transformedPaths.push_back(convertedPaths);
 	}
 }
 
-void HenyeyGreensteinSampleGenerator::ToString(Vector &z, vector<vector<MediaPath *>> &paths, vector<vector<MediaPath* >> &paths2) {
+void HenyeyGreensteinSampleGenerator::TransformVector(Vector curDir, vector<SobolPoints3D *> &paths, // paths = sobel points.
+								vector<SobolPoints3D *> &transformedPaths)
+{
+	Vector arbitrary(0.f, 1.f, 0.f);
+	Vector x = Cross(curDir, arbitrary);
+	Vector y = Cross(x, curDir);
+	transformedPaths.reserve(paths.size());
+	vector<SobolPoints3D *>::iterator itend = paths.end();
+	for(vector<SobolPoints3D  *>::iterator it = paths.begin() ; it < itend ; it++) {
+		SobolPoints3D *mediaPath = *it;
+		SobolPoints3D * mediaPathConverted = new SobolPoints3D();
+		mediaPathConverted ->x = x.x * mediaPath ->x + y.x * mediaPath ->y + curDir.x * mediaPath ->z;
+		mediaPathConverted ->y = x.y * mediaPath ->x + y.y * mediaPath ->y + curDir.y * mediaPath ->z;
+		mediaPathConverted ->z = x.z * mediaPath ->x + y.z * mediaPath ->y + curDir.z * mediaPath ->z;
+		mediaPathConverted ->pdf = mediaPath ->pdf;
+		transformedPaths.push_back(mediaPathConverted);
+	}
+}
+
+void HenyeyGreensteinSampleGenerator::ToString(Vector &z, vector<vector<SobolPoints3D *>> &paths, vector<vector<SobolPoints3D *>> &paths2) {
 	//Vector z(0.f,0.f,1.f);
 	//Vector scatterDir(-1.3f, 0.8f, 0.3f);
 	//scatterDir.Normalize();
-	vector<vector<MediaPath *>>::iterator itend = paths.end();
-	vector<vector<MediaPath *>>::iterator it2 = paths2.begin();
-	for(vector<vector<MediaPath *>>::iterator it = paths.begin() ; it < itend ; it++, it2++) {
-		vector<MediaPath *> vecMediaPaths = *it;
-		vector<MediaPath *> vecMediaPaths2 = *it2;
-		vector<MediaPath *>::iterator insideIt2 = vecMediaPaths2.begin();
-		vector<MediaPath *>::iterator insideItEnd = vecMediaPaths.end();
-		for(vector<MediaPath *>::iterator insideIt = vecMediaPaths.begin() ; insideIt < insideItEnd ; insideIt++, insideIt2++) {
-			MediaPath *mp = *insideIt;
+	vector<vector<SobolPoints3D *>>::iterator itend = paths.end();
+	vector<vector<SobolPoints3D *>>::iterator it2 = paths2.begin();
+	for(vector<vector<SobolPoints3D *>>::iterator it = paths.begin() ; it < itend ; it++, it2++) {
+		vector<SobolPoints3D *> vecMediaPaths = *it;
+		vector<SobolPoints3D *> vecMediaPaths2 = *it2;
+		vector<SobolPoints3D *>::iterator insideIt2 = vecMediaPaths2.begin();
+		vector<SobolPoints3D *>::iterator insideItEnd = vecMediaPaths.end();
+		for(vector<SobolPoints3D *>::iterator insideIt = vecMediaPaths.begin() ; insideIt < insideItEnd ; insideIt++, insideIt2++) {
+			SobolPoints3D *mp = *insideIt;
 			//				cout << mp ->wNext.x << ":" << mp ->wNext.y << ":" << mp ->wNext.z << endl;
-			MediaPath *mp2 = *insideIt2;
-			float dot = Dot(mp ->wNext, Vector(0.f, 0.f, 1.f));
-			float dot2 = Dot(mp2 ->wNext, z);
+			SobolPoints3D *mp2 = *insideIt2;
+			float dot = Dot(mp ->operator Vector(), Vector(0.f, 0.f, 1.f));
+			float dot2 = Dot(mp2 ->operator Vector(), z);
 			cout << dot << " : " << dot2 << endl;
 		}
+	}
+}
+
+void HenyeyGreensteinSampleGenerator::ToString(Vector &z, vector<SobolPoints3D *> &paths, vector<SobolPoints3D *> &paths2) {
+	vector<SobolPoints3D *>::iterator itend = paths.end();
+	vector<SobolPoints3D *>::iterator it2 = paths2.begin();
+	for(vector<SobolPoints3D *>::iterator it = paths.begin() ; it < itend ; it++, it2++) {
+		SobolPoints3D *mp = *it;
+		SobolPoints3D *mpConverted = *it2;
+		float dot = Dot(mp ->operator Vector(), Vector(0.f, 0.f, 1.f));
+		float dot2 = Dot(mpConverted ->operator Vector(), z);
+		cout << dot << " : " << dot2 << endl;
 	}
 }
 

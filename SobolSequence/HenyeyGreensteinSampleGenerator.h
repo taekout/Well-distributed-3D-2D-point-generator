@@ -27,8 +27,37 @@ struct SobolPoints3D
 	SobolPoints3D(double _x, double _y, double _z, float _pdf) {
 		x = _x; y = _y; z = _z; pdf = _pdf;
 	}
+
+	operator Vector() {
+		return Vector(x,y,z);
+	}
 };
 
+struct MediaPath {
+	Vector wPrev, wNext;
+	Point pPrev, pCur;
+	//BSDF *bsdf;
+	Spectrum alpha;
+	MediaPath() {
+		wPrev.x = wPrev.y = wPrev.z = INFINITY;
+		wNext.x = wNext.y = wNext.z = INFINITY;
+		pPrev.x = pPrev.y = pPrev.z = INFINITY;
+		pCur.x = pCur.y = pCur.z = INFINITY;
+		float rgb[3] = {0};
+		alpha.FromRGB(rgb);
+	}
+	MediaPath(float _pPrev[3], float _pCur[3], float _wPrev[3], float _wNext[3]) {
+		wPrev.x = _wPrev[0]; wPrev.y = _wPrev[1]; wPrev.z = _wPrev[2];
+		wNext.x = _wNext[0]; wNext.y = _wNext[1]; wNext.z = _wNext[2];
+		pPrev.x = _pPrev[0]; pPrev.y = _pPrev[1]; pPrev.z = _pPrev[2];
+		pCur.x = _pCur[0]; pCur.y = _pCur[1]; pCur.z = _pCur[2];
+		float rgb[3] = {0};
+		alpha.FromRGB(rgb);
+	}
+	operator Vector() {
+		return Vector(wNext.x, wNext.y, wNext.z);
+	}
+};
 
 class HenyeyGreensteinSampleGenerator
 {
@@ -40,10 +69,13 @@ private:
 public:
 	HenyeyGreensteinSampleGenerator(unsigned int N, float g = 0.64f);
 	virtual ~HenyeyGreensteinSampleGenerator(void);
-	virtual void ToString(Vector &z, vector<vector<MediaPath *>> &paths, vector<vector<MediaPath* >> &paths2);
+	virtual void ToString(Vector &z, vector<vector<SobolPoints3D *>> &paths, vector<vector<SobolPoints3D* >> &paths2);
+	virtual void ToString(Vector &z, vector<SobolPoints3D *> &paths, vector<SobolPoints3D *> &paths2);
 	static void PrintVectors(vector<vector<MediaPath *>> &mpVec);
-	static void TransformVector(Vector curDir, vector<vector<MediaPath *>> &paths,
-				vector<vector<MediaPath *>> &transformedPaths);
+	static void TransformVector(Vector curDir, vector<vector<SobolPoints3D *>> &paths,
+				vector<vector<SobolPoints3D *>> &transformedPaths);
+	static void TransformVector(Vector curDir, vector<SobolPoints3D *> &paths,
+				vector<SobolPoints3D *> &transformedPaths);
 	/*
 ** z_basis is the scatter vector direction. x and y are generated with cross product.
 (x_basis, y_basis, z_basis) * (0,0,1)' = (IdentityMatrix) * (SobelSequence)';
